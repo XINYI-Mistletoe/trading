@@ -15,5 +15,3 @@ def main():
             print('The market buy order was submitted and has ID', id)
         else:
             print('The order was not successfully submitted!')
-if __name__ == '__main__':
-    main()
