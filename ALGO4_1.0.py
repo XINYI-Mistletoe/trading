@@ -83,8 +83,8 @@ def main():
     leases = resp.json()
     creation_id = 'http://localhost:9999/v1/leases/' + str(leases[0]['id'])
     redemption_id = 'http://localhost:9999/v1/leases/' + str(leases[1]['id'])
-    currency = ORDER_LIMIT * 0.0375
-    volume = ORDER_LIMIT
+    currency = 2*ORDER_LIMIT * 0.0375
+    volume = 2*ORDER_LIMIT
     
     while True:        
         # for i in range(3):
@@ -94,21 +94,27 @@ def main():
             market_prices[i, 0], market_prices[i, 1] = get_bid_ask(ticker_symbol)
         if market_prices[0, 0] + market_prices[1, 0] > market_prices[2, 1] + 0.0625: # 0.0375 + 0.025
             
-            resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': 'RGLD', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'price': market_prices[0, 0], 'action': 'SELL'})
-            resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': 'INDX', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'price': market_prices[2, 1], 'action': 'BUY'})
-            resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': 'RFIN', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'price': market_prices[1, 0], 'action': 'SELL'})
+            s.post('http://localhost:9999/v1/orders', params = {'ticker': 'RGLD', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'action': 'SELL'})
+            s.post('http://localhost:9999/v1/orders', params = {'ticker': 'INDX', 'type': 'MARKET', 'quantity': ORDER_LIMIT,  'action': 'BUY'})
+            s.post('http://localhost:9999/v1/orders', params = {'ticker': 'RFIN', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'action': 'SELL'})
+            s.post('http://localhost:9999/v1/orders', params = {'ticker': 'RGLD', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'action': 'SELL'})
+            s.post('http://localhost:9999/v1/orders', params = {'ticker': 'INDX', 'type': 'MARKET', 'quantity': ORDER_LIMIT,  'action': 'BUY'})
+            s.post('http://localhost:9999/v1/orders', params = {'ticker': 'RFIN', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'action': 'SELL'})
             resp = s.post(redemption_id, params = {'from1': 'INDX', 'quantity1': volume, 'from2': 'CAD', 'quantity2': currency})
             while not(resp.ok):
                 resp = s.post(redemption_id, params = {'from1': 'INDX', 'quantity1': volume, 'from2': 'CAD', 'quantity2': currency})
 
         elif market_prices[0, 1] + market_prices[1, 1] + 0.025 < market_prices[2, 0]:    
-            resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': 'RGLD', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'price': market_prices[0, 1], 'action': 'BUY'})
-            resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': 'INDX', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'price': market_prices[2, 0], 'action': 'SELL'})
-            resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': 'RFIN', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'price': market_prices[1, 1], 'action': 'BUY'})
-            resp = s.post(creation_id, params = {'from1': 'RGLD', 'quantity1': ORDER_LIMIT, 'from2': 'RFIN', 'quantity2': ORDER_LIMIT})
+            s.post('http://localhost:9999/v1/orders', params = {'ticker': 'RGLD', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'action': 'BUY'})
+            s.post('http://localhost:9999/v1/orders', params = {'ticker': 'INDX', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'action': 'SELL'})
+            s.post('http://localhost:9999/v1/orders', params = {'ticker': 'RFIN', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'action': 'BUY'})
+            s.post('http://localhost:9999/v1/orders', params = {'ticker': 'RGLD', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'action': 'BUY'})
+            s.post('http://localhost:9999/v1/orders', params = {'ticker': 'INDX', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'action': 'SELL'})
+            s.post('http://localhost:9999/v1/orders', params = {'ticker': 'RFIN', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'action': 'BUY'})
+            resp = s.post(creation_id, params = {'from1': 'RGLD', 'quantity1': 2*ORDER_LIMIT, 'from2': 'RFIN', 'quantity2': 2*ORDER_LIMIT})
             while not(resp.ok):
-                resp = s.post(creation_id, params = {'from1': 'RGLD', 'quantity1': ORDER_LIMIT, 'from2': 'RFIN', 'quantity2': ORDER_LIMIT})
-
+                resp = s.post(creation_id, params = {'from1': 'RGLD', 'quantity1': 2*ORDER_LIMIT, 'from2': 'RFIN', 'quantity2': 2*ORDER_LIMIT})
+        sleep(0.01)
         # tick, status = get_tick()
 
 if __name__ == '__main__':
