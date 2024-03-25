@@ -79,7 +79,7 @@ def net_position(i):
         return book[i]['position']
 
 def spread(ticker_i,t):
-    return spread_dict[ticker_i]*10/t
+    return spread_dict[ticker_i]*20/t
 
 
 
@@ -90,102 +90,95 @@ spread_dict = [0.0027, 0.002,0.0015]
 while True:
     for i in range(2): 
         i = 1
+        t= 1
         best_bid_price, best_ask_price = get_bid_ask(ticker_list[i])
-        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_bid_price-spread_dict[i], 'action': 'BUY'})
-        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_ask_price+spread_dict[i], 'action': 'SELL'})
-        sleep(0.1)
+        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_bid_price-spread(i,t), 'action': 'BUY'})
+        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_ask_price+spread(i,t), 'action': 'SELL'})
+        sleep(0.05)
         best_bid_price, best_ask_price = get_bid_ask(ticker_list[i])
-        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_bid_price-spread_dict[i], 'action': 'BUY'})
-        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_ask_price+spread_dict[i], 'action': 'SELL'})
-        sleep(0.1)
+        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_bid_price-spread(i,t), 'action': 'BUY'})
+        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_ask_price+spread(i,t), 'action': 'SELL'})
+        sleep(0.05)
         best_bid_price, best_ask_price = get_bid_ask(ticker_list[i])
-        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_bid_price-spread_dict[i], 'action': 'BUY'})
-        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_ask_price+spread_dict[i], 'action': 'SELL'})
-        sleep(0.1)
+        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_bid_price-spread(i,t), 'action': 'BUY'})
+        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_ask_price+spread(i,t), 'action': 'SELL'})
+        sleep(0.05)
         best_bid_price, best_ask_price = get_bid_ask(ticker_list[i])
-        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_bid_price-spread_dict[i], 'action': 'BUY'})
-        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_ask_price+spread_dict[i], 'action': 'SELL'})
-        sleep(0.1)
+        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_bid_price-spread(i,t), 'action': 'BUY'})
+        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_ask_price+spread(i,t), 'action': 'SELL'})
+        sleep(0.05)
         best_bid_price, best_ask_price = get_bid_ask(ticker_list[i])
-        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_bid_price-spread_dict[i], 'action': 'BUY'})
-        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_ask_price+spread_dict[i], 'action': 'SELL'})
+        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_bid_price-spread(i,t), 'action': 'BUY'})
+        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_ask_price+spread(i,t), 'action': 'SELL'})
         
-        t = 1
         while True:
             sleep(0.2)
             buy_orders,sell_orders = get_open_orders(ticker_list[i])
             position = get_position()
-            sleep(0.05)
             if (buy_orders == []) and (sell_orders == []) and (position == 0):
                 print('clear')
                 break
             elif buy_orders == [] and sell_orders != []:
-                print('open sell')
+                print('open sell',net_position(i))
+                if net_position(i) < 0:
+                    continue
                 new_bid_price, new_ask_price = get_bid_ask(ticker_list[i])
-                if (best_ask_price - new_ask_price < 0.1) and (t <= 10):
+                if (best_ask_price - new_ask_price < 0.03) and (t <= 7):
                     print('pause')
                     t +=1
                     continue
                 else:
                     buy_orders,sell_orders = get_open_orders(ticker_list[i])
-                    if (buy_orders == []) and (sell_orders == []):
+                    if ((buy_orders == []) and (sell_orders == [])):
                         continue
                     else:
-                        resp = s.post('http://localhost:9999/v1/commands/cancel', params = {'ticker': ticker_list[i]})
-                        sleep(0.05)
+                        while (get_open_orders(ticker_list[i]) != ([],[])):
+                            resp = s.post('http://localhost:9999/v1/commands/cancel', params = {'ticker': ticker_list[i]})
                         x = net_position(i)
                         while abs(x) > 5000:
                             new_bid_price, new_ask_price = get_bid_ask(ticker_list[i])
-                            resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': 5000, 'price': new_ask_price+spread_dict[i], 'action': 'SELL'})
+                            resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': 5000, 'price': new_ask_price+spread(i,t), 'action': 'SELL'})
                             x = abs(x)-5000
-                        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': abs(x), 'price': new_ask_price+spread_dict[i], 'action': 'SELL'})
+                        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': abs(x), 'price': new_ask_price+spread(i,t), 'action': 'SELL'})
 
             elif buy_orders != [] and sell_orders == []:
-                print('open buy')
+                print('open buy',net_position(i))
+                if net_position(i) > 0:
+                    continue
                 new_bid_price, new_ask_price = get_bid_ask(ticker_list[i])
-                if (new_bid_price - best_bid_price < 0.1) and (t <= 10):
+                if (new_bid_price - best_bid_price < 0.03) and (t <= 7):
                     print('pause')
                     t += 1
                     continue
                 else:
                     buy_orders,sell_orders = get_open_orders(ticker_list[i])
-                    if (buy_orders == []) and (sell_orders == []):
+                    if ((buy_orders == []) and (sell_orders == [])):
                         continue
                     else:
-                        resp = s.post('http://localhost:9999/v1/commands/cancel', params = {'ticker': ticker_list[i]})
-                        sleep(0.05)
+                        while (get_open_orders(ticker_list[i]) != ([],[])):
+                            resp = s.post('http://localhost:9999/v1/commands/cancel', params = {'ticker': ticker_list[i]})
                         x = net_position(i)
                         while abs(x) > 5000:
                             new_bid_price, new_ask_price = get_bid_ask(ticker_list[i])
-                            resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': 5000, 'price': new_bid_price-spread_dict[i], 'action': 'BUY'})
+                            resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': 5000, 'price': new_bid_price-spread(i,t), 'action': 'BUY'})
                             x = abs(x)-5000
-                        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': abs(x), 'price': new_bid_price-spread_dict[i], 'action': 'BUY'})
+                        resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': abs(x), 'price': new_bid_price-spread(i,t), 'action': 'BUY'})
 
             else:
                 print('both open')
-                if t <= 15:
+                if t <= 10:
                     t +=1
                     continue
                 else:
                     print('need to clear up')
-                    resp = s.post('http://localhost:9999/v1/commands/cancel', params = {'ticker': ticker_list[i]})
-                    sleep(0.05)
+                    while (get_open_orders(ticker_list[i]) != ([],[])):
+                            resp = s.post('http://localhost:9999/v1/commands/cancel', params = {'ticker': ticker_list[i]})
                     x = net_position(i)
-                    sleep(0.1)
                     if x > 0:
                         resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'MARKET', 'quantity': abs(x), 'action': 'SELL'})
                     else:
                         resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'MARKET', 'quantity': abs(x), 'action': 'BUY'})
-                    sleep(0.05)
-                    if resp.ok != True:
-                        x = net_position(i)
-                        sleep(0.1)
-                        if x == 0:
-                            continue
-                        elif x > 0:
-                            resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'MARKET', 'quantity': abs(x), 'action': 'SELL'})
-                        else:
-                            resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'MARKET', 'quantity': abs(x), 'action': 'BUY'})
+                    
             t += 1
 
 

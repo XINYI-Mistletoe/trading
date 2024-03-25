@@ -15,7 +15,7 @@ def signal_handler(signum,frame):
 s = requests.Session()
 s.headers.update({'X-API-key': 'OFU9ARTN'})
 
-resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': 'RY', 'type': 'MARKET', 'quantity': 12000, 'action': 'SELL'})
+resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': 'RY', 'type': 'LIMIT', 'quantity': 1000, 'price':0.0001,action': 'SELL'})
 print(resp.ok)
 # resp = s.get ('http://localhost:9999/v1/securities')
 # if resp.ok:
