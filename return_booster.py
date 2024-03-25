@@ -11,7 +11,7 @@ s.headers.update({'X-API-key': 'OFU9ARTN'})
 speedbump = 0.5
 MAX_LONG_EXPOSURE = 25000
 MAX_SHORT_EXPOSURE = -25000
-ORDER_LIMIT = 5000
+ORDER_LIMIT = 2000
 
 def get_tick():
     resp = s.get('http://localhost:9999/v1/case')
@@ -71,14 +71,14 @@ def net_position(i):
         return book[i]['position']
 
 def spread(ticker_i,t):
-    return 0.01/t
+    return 0.015/t
 
 ticker_list = ['CNR','RY','AC']
 spread_dict = [0.0027, 0.002,0.0015]
 
 while True:
     for i in range(3):
-        i = 1
+        i = 0
         t = 1
         best_bid_price, best_ask_price = get_bid_ask(ticker_list[i])
         resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_bid_price-spread(i,t), 'action': 'BUY'})
