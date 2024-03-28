@@ -74,7 +74,7 @@ def spread(ticker_i,t,tick):
     if tick <50:
         return 0.02/(t*t)
     elif 50<= tick <150:
-        return 0.01/(t*t)
+        return 0.015/(t*t)
     elif 150 <= tick < 200:
         return 0.01/(t*t)
     elif 200<= tick <250:
@@ -111,9 +111,9 @@ while True:
     best_bid_price, best_ask_price = get_bid_ask(ticker_list[i])
     resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_bid_price-spread(i,t,tick), 'action': 'BUY'})
     resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_ask_price+spread(i,t,tick), 'action': 'SELL'})
-    sleep(0.2)
+    sleep(0.25)
     while True:
-        sleep(0.15)
+        sleep(0.1)
         buy_orders,sell_orders = get_open_orders(ticker_list[i])
         if (buy_orders == []) and (sell_orders == []) and (net_position(i) == 0):
             print('clear up!')
