@@ -184,55 +184,55 @@ while True:
         print('arbitrage')
     else:
         # continue
-        position_num = 100
-        spread = market_prices[:,1] - market_prices[:,0]
-        if max(spread) >= 0.7:
-            print('limit order')
-            i = np.argmax(spread)
-            ticker = ticker_list[i]
-            best_bid_price = market_prices[i,0]+0.2
-            best_ask_price = market_prices[i,1]-0.2
-            resp_buy = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': position_num, 'price': best_bid_price, 'action': 'BUY'})
-            resp_sell = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': position_num, 'price': best_ask_price, 'action': 'SELL'})
-            if resp_buy.ok and resp_sell.ok:
-                buy_id = resp_buy.json()["order_id"]
-                sell_id = resp_sell.json()["order_id"]
-            else:
-                continue
-            sleep(0.3)
-            while True:
-                # sleep(0.1)
-                buy_orders,sell_orders = get_mini_open_orders(ticker_list[i],position_num)
-                if get_mini_open_orders(ticker_list[i],position_num) == ([],[]):
-                    print('clear')
-                    break
-                elif buy_orders == [] and sell_orders != []:
-                    print('open sell')
-                    unfilled_q = sell_orders[0]["quantity"] - sell_orders[0]["quantity_filled"]
-                    while (get_mini_open_orders(ticker_list[i],position_num) != ([],[])):
-                        resp = s.post('http://localhost:9999/v1/commands/cancel', params = {'ids': sell_id})
-                        # sleep(0.2)
-                    resp= s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'MARKET', 'quantity': unfilled_q,'action': 'SELL'})
-                elif buy_orders != [] and sell_orders == []:
-                    print('open buy')
-                    unfilled_q = buy_orders[0]["quantity"] - buy_orders[0]["quantity_filled"]
-                    while (get_mini_open_orders(ticker_list[i],position_num) != ([],[])):
-                        resp = s.post('http://localhost:9999/v1/commands/cancel', params = {'ids':buy_id})
-                    resp= s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'MARKET', 'quantity': unfilled_q, 'action': 'BUY'})
-                else:
-                    print('both')
-                    try:
-                        net = buy_orders[0]["quantity_filled"] - sell_orders[0]["quantity_filled"]
-                        while (get_mini_open_orders(ticker_list[i],position_num) != ([],[])):
-                            print('cancel failed')
-                            resp = s.post('http://localhost:9999/v1/commands/cancel', params = {'ids':sell_id})
-                            resp = s.post('http://localhost:9999/v1/commands/cancel', params = {'ids': buy_id})
-                        if net > 0:
-                            resp= s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'MARKET', 'quantity': abs(net),  'action': 'SELL'})
-                        else:
-                            resp= s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'MARKET', 'quantity': abs(net),  'action': 'BUY'})
-                    except:
-                        continue
+        # position_num = 100
+        # spread = market_prices[:,1] - market_prices[:,0]
+        # if max(spread) >= 0.7:
+        #     print('limit order')
+        #     i = np.argmax(spread)
+        #     ticker = ticker_list[i]
+        #     best_bid_price = market_prices[i,0]+0.2
+        #     best_ask_price = market_prices[i,1]-0.2
+        #     resp_buy = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': position_num, 'price': best_bid_price, 'action': 'BUY'})
+        #     resp_sell = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': position_num, 'price': best_ask_price, 'action': 'SELL'})
+        #     if resp_buy.ok and resp_sell.ok:
+        #         buy_id = resp_buy.json()["order_id"]
+        #         sell_id = resp_sell.json()["order_id"]
+        #     else:
+        #         continue
+        #     sleep(0.3)
+        #     while True:
+        #         # sleep(0.1)
+        #         buy_orders,sell_orders = get_mini_open_orders(ticker_list[i],position_num)
+        #         if get_mini_open_orders(ticker_list[i],position_num) == ([],[]):
+        #             print('clear')
+        #             break
+        #         elif buy_orders == [] and sell_orders != []:
+        #             print('open sell')
+        #             unfilled_q = sell_orders[0]["quantity"] - sell_orders[0]["quantity_filled"]
+        #             while (get_mini_open_orders(ticker_list[i],position_num) != ([],[])):
+        #                 resp = s.post('http://localhost:9999/v1/commands/cancel', params = {'ids': sell_id})
+        #                 # sleep(0.2)
+        #             resp= s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'MARKET', 'quantity': unfilled_q,'action': 'SELL'})
+        #         elif buy_orders != [] and sell_orders == []:
+        #             print('open buy')
+        #             unfilled_q = buy_orders[0]["quantity"] - buy_orders[0]["quantity_filled"]
+        #             while (get_mini_open_orders(ticker_list[i],position_num) != ([],[])):
+        #                 resp = s.post('http://localhost:9999/v1/commands/cancel', params = {'ids':buy_id})
+        #             resp= s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'MARKET', 'quantity': unfilled_q, 'action': 'BUY'})
+        #         else:
+        #             print('both')
+        #             try:
+        #                 net = buy_orders[0]["quantity_filled"] - sell_orders[0]["quantity_filled"]
+        #                 while (get_mini_open_orders(ticker_list[i],position_num) != ([],[])):
+        #                     print('cancel failed')
+        #                     resp = s.post('http://localhost:9999/v1/commands/cancel', params = {'ids':sell_id})
+        #                     resp = s.post('http://localhost:9999/v1/commands/cancel', params = {'ids': buy_id})
+        #                 if net > 0:
+        #                     resp= s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'MARKET', 'quantity': abs(net),  'action': 'SELL'})
+        #                 else:
+        #                     resp= s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'MARKET', 'quantity': abs(net),  'action': 'BUY'})
+        #             except:
+        #                 continue
                 
 
 

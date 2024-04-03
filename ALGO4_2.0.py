@@ -3,7 +3,7 @@ from time import sleep
 import numpy as np
 
 s = requests.Session()
-s.headers.update({'X-API-key': 'OFU9ARTN'}) # Make sure you use YOUR API Key
+s.headers.update({'X-API-key': 'ABCDEFG'}) # Make sure you use YOUR API Key
 
 # global variables
 MAX_LONG_EXPOSURE_NET = 25000
@@ -86,13 +86,10 @@ def main():
     currency = 2*ORDER_LIMIT * 0.0375
     volume = 2*ORDER_LIMIT
     
-    while True:        
-        # for i in range(3):
-        #     ticker_symbol = ticker_list[i]
-        #     market_prices[i,0], market_prices[i,1] = get_bid_ask(ticker_symbol)    
+    while True:         
         for i, ticker_symbol in enumerate(ticker_list):
             market_prices[i, 0], market_prices[i, 1] = get_bid_ask(ticker_symbol)
-        if market_prices[0, 0] + market_prices[1, 0] > market_prices[2, 1] + 0.0625: # 0.0375 + 0.025
+        if market_prices[0, 0] + market_prices[1, 0] > market_prices[2, 1] + 0.06251: # 0.0375 + 0.025
             
             s.post('http://localhost:9999/v1/orders', params = {'ticker': 'RGLD', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'action': 'SELL'})
             s.post('http://localhost:9999/v1/orders', params = {'ticker': 'INDX', 'type': 'MARKET', 'quantity': ORDER_LIMIT,  'action': 'BUY'})
@@ -105,7 +102,7 @@ def main():
                 if resp.ok == True:
                     break
 
-        elif market_prices[0, 1] + market_prices[1, 1] + 0.025 < market_prices[2, 0]:    
+        elif market_prices[0, 1] + market_prices[1, 1] + 0.0251 < market_prices[2, 0]:    
             s.post('http://localhost:9999/v1/orders', params = {'ticker': 'RGLD', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'action': 'BUY'})
             s.post('http://localhost:9999/v1/orders', params = {'ticker': 'INDX', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'action': 'SELL'})
             s.post('http://localhost:9999/v1/orders', params = {'ticker': 'RFIN', 'type': 'MARKET', 'quantity': ORDER_LIMIT, 'action': 'BUY'})
@@ -116,7 +113,7 @@ def main():
                 resp = s.post(creation_id, params = {'from1': 'RGLD', 'quantity1': 2*ORDER_LIMIT, 'from2': 'RFIN', 'quantity2': 2*ORDER_LIMIT})
                 if resp.ok == True:
                     break
-        # sleep(0.01)
+        sleep(0.01)
         # tick, status = get_tick()
 
 if __name__ == '__main__':

@@ -3,9 +3,10 @@ from time import sleep
 import signal
 import sys
 import os
+import numpy as np
 
 s = requests.Session()
-s.headers.update({'X-API-key': 'OFU9ARTN'})
+s.headers.update({'X-API-key': 'ABCDEFG'})
 
 # parameter setting
 speedbump = 0.5
@@ -73,7 +74,7 @@ def net_position(i):
 def spread(ticker_i,t):
     tick, status = get_tick()
     v = len(get_time_sales("RY",tick))
-    print(v)
+    # print(tick,v)
     if v > 25:
         return 0.01/(t*t)
     elif v > 12:
@@ -85,16 +86,21 @@ def spread(ticker_i,t):
 
 ticker_list = ['CNR','RY','AC']
 spread_dict = [0.0027, 0.002,0.0015]
+market_price = np.array([0., 0., 0., 0., 0., 0.]).reshape(3,2)
 
 
+
+# spread('CNR',1)
+
+# os._exit(0)
 while True:
-    # for i in range(3):
+    
     i = 1
     t = 1
     best_bid_price, best_ask_price = get_bid_ask(ticker_list[i])
     resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_bid_price-spread(i,t), 'action': 'BUY'})
     resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_ask_price+spread(i,t), 'action': 'SELL'})
- 
+    print(resp.ok)
     best_bid_price, best_ask_price = get_bid_ask(ticker_list[i])
     resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_bid_price-spread(i,t), 'action': 'BUY'})
     resp = s.post('http://localhost:9999/v1/orders', params = {'ticker': ticker_list[i], 'type': 'LIMIT', 'quantity': ORDER_LIMIT, 'price': best_ask_price+spread(i,t), 'action': 'SELL'})
